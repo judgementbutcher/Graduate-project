@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/player_controller.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/npc_interaction.gd" id="2_npc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(16, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chief"]
+size = Vector2(20, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_guard"]
+size = Vector2(20, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_merchant"]
+size = Vector2(20, 20)
+
+[node name="WorldVillage" type="Node2D"]
+
+[node name="TileMapLayer" type="Node2D" parent="."]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="NPCChief" type="Area2D" parent="."]
+position = Vector2(144, -32)
+script = ExtResource("2_npc")
+npc_id = 1
+npc_name = "Village Chief"
+selected_option = "ask_for_help"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCChief"]
+shape = SubResource("RectangleShape2D_chief")
+
+[node name="NPCGuard" type="Area2D" parent="."]
+position = Vector2(208, 24)
+script = ExtResource("2_npc")
+npc_id = 2
+npc_name = "Gate Guard"
+selected_option = "demand_passage"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCGuard"]
+shape = SubResource("RectangleShape2D_guard")
+
+[node name="NPCMerchant" type="Area2D" parent="."]
+position = Vector2(88, 56)
+script = ExtResource("2_npc")
+npc_id = 3
+npc_name = "Merchant Lin"
+selected_option = "ask_about_parcel"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCMerchant"]
+shape = SubResource("RectangleShape2D_merchant")
