@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "Village Chief",
+    "role": "chief",
+    "personality": "careful but kind",
+    "current_scene": "village",
+    "emotion_state": "neutral",
+    "description": "Knows the village history and controls the main quest."
+  },
+  {
+    "id": 2,
+    "name": "Gate Guard",
+    "role": "guard",
+    "personality": "strict and suspicious",
+    "current_scene": "village",
+    "emotion_state": "alert",
+    "description": "Blocks access to the gate until trust is earned."
+  },
+  {
+    "id": 3,
+    "name": "Merchant Lin",
+    "role": "merchant",
+    "personality": "talkative and practical",
+    "current_scene": "village",
+    "emotion_state": "neutral",
+    "description": "Offers a side quest and extra clues after help is given."
+  }
+]
