@@ -2,9 +2,11 @@ from fastapi import FastAPI
 
 from app.db import SessionLocal, engine
 from app.models import Base
+from app.routes.dialogue import router as dialogue_router
 from app.seed import seed_database
 
 app = FastAPI(title="Emotion-Driven RPG API")
+app.include_router(dialogue_router)
 
 
 @app.on_event("startup")
