@@ -80,6 +80,26 @@ def test_foreign_keys_are_enforced(test_session):
     test_session.rollback()
 
 
+def test_relationship_state_unique_pair_is_enforced(test_session):
+    seed_database(test_session)
+    test_session.commit()
+
+    test_session.add(RelationshipState(player_id=1, npc_id=1))
+    with pytest.raises(IntegrityError):
+        test_session.commit()
+    test_session.rollback()
+
+
+def test_quest_progress_unique_pair_is_enforced(test_session):
+    seed_database(test_session)
+    test_session.commit()
+
+    test_session.add(QuestProgress(player_id=1, quest_id=1))
+    with pytest.raises(IntegrityError):
+        test_session.commit()
+    test_session.rollback()
+
+
 def test_seed_repairs_static_seed_drift(test_session):
     seed_database(test_session)
     test_session.commit()
@@ -118,3 +138,9 @@ def test_seed_repairs_static_seed_drift(test_session):
     assert repaired_npc.name == "Village Chief"
     assert repaired_quest.title == "Strange Footprints"
     assert repaired_memory.content == "I noticed footprints near the northern gate after sunset."
+    assert repaired_memory.source_event == "gate_report"
+    assert len(
+        test_session.scalars(
+            select(NPCMemory).where(NPCMemory.npc_id == 1, NPCMemory.source_event == "gate_report")
+        ).all()
+    ) == 1

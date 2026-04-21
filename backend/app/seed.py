@@ -58,7 +58,6 @@ def seed_database(session: Session) -> None:
 
     required_memories = [
         {
-            "id": 1,
             "npc_id": 1,
             "content": "I noticed footprints near the northern gate after sunset.",
             "keywords": "footprints,gate,north",
@@ -67,7 +66,6 @@ def seed_database(session: Session) -> None:
             "source_event": "gate_report",
         },
         {
-            "id": 2,
             "npc_id": 2,
             "content": "I do not open the gate without proof of safe passage.",
             "keywords": "gate,proof,passage",
@@ -76,7 +74,6 @@ def seed_database(session: Session) -> None:
             "source_event": "guard_protocol",
         },
         {
-            "id": 3,
             "npc_id": 3,
             "content": "I lost a parcel near the gate road this morning.",
             "keywords": "parcel,merchant,gate",

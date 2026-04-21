@@ -19,8 +19,7 @@ def test_health_endpoint_returns_ok():
 
 
 def test_startup_bootstraps_seed_data(monkeypatch):
-    temp_dir = Path(__file__).resolve().parent / "_tmp"
-    temp_dir.mkdir(exist_ok=True)
+    temp_dir = Path(__file__).resolve().parent
     db_path = temp_dir / f"startup_test_{uuid4().hex}.db"
     isolated_db_url = f"sqlite:///{db_path.as_posix()}"
     isolated_engine = create_engine(
@@ -46,16 +45,21 @@ def test_startup_bootstraps_seed_data(monkeypatch):
     monkeypatch.setattr(main_module, "engine", isolated_engine)
     monkeypatch.setattr(main_module, "SessionLocal", isolated_session_local)
 
-    with TestClient(main_module.app) as client:
-        response = client.get("/health")
-        assert response.status_code == 200
+    try:
+        with TestClient(main_module.app) as client:
+            response = client.get("/health")
+            assert response.status_code == 200
 
-    with isolated_session_local() as session:
-        hero = session.scalar(select(Player).where(Player.id == 1))
-        npc_count = len(session.scalars(select(NPC)).all())
-        quest_count = len(session.scalars(select(Quest)).all())
+        with isolated_session_local() as session:
+            hero = session.scalar(select(Player).where(Player.id == 1))
+            npc_count = len(session.scalars(select(NPC)).all())
+            quest_count = len(session.scalars(select(Quest)).all())
 
-    assert hero is not None
-    assert hero.name == "Hero"
-    assert npc_count == 3
-    assert quest_count == 3
+        assert hero is not None
+        assert hero.name == "Hero"
+        assert npc_count == 3
+        assert quest_count == 3
+    finally:
+        isolated_engine.dispose()
+        if db_path.exists():
+            db_path.unlink()
