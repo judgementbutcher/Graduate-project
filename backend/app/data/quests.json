@@ -2,7 +2,7 @@
   {
     "id": 1,
     "title": "Strange Footprints",
-    "description": "Investigate mysterious footprints reported near the village gate.",
+    "description": "Ask around the village and inspect the northern gate.",
     "quest_type": "main",
     "giver_npc_id": 1,
     "target_scene": "gate",
@@ -11,7 +11,7 @@
   {
     "id": 2,
     "title": "Merchant's Lost Parcel",
-    "description": "Help Merchant Lin recover the missing parcel on the gate road.",
+    "description": "Recover the merchant parcel near the gate.",
     "quest_type": "side",
     "giver_npc_id": 3,
     "target_scene": "gate",
@@ -20,7 +20,7 @@
   {
     "id": 3,
     "title": "Permission to Pass",
-    "description": "Convince the guard to allow passage through the gate.",
+    "description": "Convince the guard to open the gate.",
     "quest_type": "side",
     "giver_npc_id": 2,
     "target_scene": "village",

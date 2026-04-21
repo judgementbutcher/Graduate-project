@@ -9,7 +9,7 @@ class Base(DeclarativeBase):
 
 
 class Player(Base):
-    __tablename__ = "players"
+    __tablename__ = "player"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -20,7 +20,7 @@ class Player(Base):
 
 
 class NPC(Base):
-    __tablename__ = "npcs"
+    __tablename__ = "npc"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -32,22 +32,22 @@ class NPC(Base):
 
 
 class RelationshipState(Base):
-    __tablename__ = "relationship_states"
+    __tablename__ = "relationship_state"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
-    npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
-    favorability: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    trust: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    alertness: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    player_id: Mapped[int] = mapped_column(ForeignKey("player.id"), nullable=False)
+    npc_id: Mapped[int] = mapped_column(ForeignKey("npc.id"), nullable=False)
+    favorability: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    trust: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    alertness: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
 
 
 class NPCMemory(Base):
-    __tablename__ = "npc_memories"
+    __tablename__ = "npc_memory"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    npc_id: Mapped[int] = mapped_column(ForeignKey("npc.id"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     keywords: Mapped[str] = mapped_column(String(255), nullable=False)
     importance: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
@@ -57,13 +57,13 @@ class NPCMemory(Base):
 
 
 class Quest(Base):
-    __tablename__ = "quests"
+    __tablename__ = "quest"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     quest_type: Mapped[str] = mapped_column(String(50), nullable=False)
-    giver_npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    giver_npc_id: Mapped[int] = mapped_column(ForeignKey("npc.id"), nullable=False)
     target_scene: Mapped[str] = mapped_column(String(100), nullable=False)
     reward_desc: Mapped[str] = mapped_column(Text, nullable=False)
 
@@ -72,19 +72,19 @@ class QuestProgress(Base):
     __tablename__ = "quest_progress"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
-    quest_id: Mapped[int] = mapped_column(ForeignKey("quests.id"), nullable=False)
+    player_id: Mapped[int] = mapped_column(ForeignKey("player.id"), nullable=False)
+    quest_id: Mapped[int] = mapped_column(ForeignKey("quest.id"), nullable=False)
     current_stage: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="not_started")
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="locked")
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
 
 
 class DialogueLog(Base):
-    __tablename__ = "dialogue_logs"
+    __tablename__ = "dialogue_log"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
-    npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    player_id: Mapped[int] = mapped_column(ForeignKey("player.id"), nullable=False)
+    npc_id: Mapped[int] = mapped_column(ForeignKey("npc.id"), nullable=False)
     player_input: Mapped[str] = mapped_column(Text, nullable=False)
     emotion_result: Mapped[str] = mapped_column(String(100), nullable=False)
     chosen_action: Mapped[str] = mapped_column(String(100), nullable=False)
