@@ -63,6 +63,7 @@ def test_dialogue_interact_returns_expected_payload_for_chief(monkeypatch):
             == "The chief lowers his voice. 'Check the northern gate. Something changed there last night.'"
         )
         assert body["quest_update"] == "main_started"
+        assert body["relationship_change"] == {"favorability": 1, "trust": 1, "alertness": 0}
 
         with isolated_session_local() as session:
             relationship = session.scalar(
@@ -171,6 +172,55 @@ def test_dialogue_interact_chief_does_not_rewind_progressed_quest(monkeypatch):
             assert quest_after is not None
             assert quest_after.status == "completed"
             assert quest_after.current_stage == 3
+    finally:
+        isolated_engine.dispose()
+        if db_path.exists():
+            db_path.unlink()
+
+
+def test_dialogue_interact_fails_when_relationship_state_missing(monkeypatch):
+    isolated_engine, isolated_session_local, db_path = _build_isolated_session()
+    monkeypatch.setattr(main_module, "engine", isolated_engine)
+    monkeypatch.setattr(main_module, "SessionLocal", isolated_session_local)
+    monkeypatch.setattr(dialogue_module, "SessionLocal", isolated_session_local)
+
+    payload = {
+        "player_id": 1,
+        "npc_id": 1,
+        "scene_id": "village",
+        "input_text": "Please help me with the gate issue.",
+        "selected_option": "ask_about_gate",
+    }
+
+    try:
+        with TestClient(main_module.app) as client:
+            with isolated_session_local() as session:
+                relationship = session.scalar(
+                    select(RelationshipState).where(
+                        RelationshipState.player_id == 1,
+                        RelationshipState.npc_id == 1,
+                    )
+                )
+                assert relationship is not None
+                session.delete(relationship)
+                session.commit()
+
+            raised = False
+            try:
+                client.post("/api/dialogue/interact", json=payload)
+            except ValueError:
+                raised = True
+
+            assert raised is True
+
+            with isolated_session_local() as session:
+                relationship_after = session.scalar(
+                    select(RelationshipState).where(
+                        RelationshipState.player_id == 1,
+                        RelationshipState.npc_id == 1,
+                    )
+                )
+            assert relationship_after is None
     finally:
         isolated_engine.dispose()
         if db_path.exists():
