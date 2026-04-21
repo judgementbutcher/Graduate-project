@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import re
+
 
 def score_memory(query: str, emotion_label: str, memory: dict) -> float:
-    query_words = set(query.lower().split())
+    query_words = set(re.findall(r"\b\w+\b", query.lower()))
     keywords = [part.strip().lower() for part in memory.get("keywords", "").split(",")]
     hit_count = sum(1 for keyword in keywords if keyword and keyword in query_words)
     importance = float(memory.get("importance", 0))
