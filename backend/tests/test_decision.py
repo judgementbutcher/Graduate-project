@@ -34,6 +34,25 @@ def test_choose_action_guard_refuses_on_low_trust_without_parcel_done():
     assert action == "refuse"
 
 
+def test_choose_action_guard_refuses_with_missing_or_none_trust():
+    missing_trust_action = choose_action(
+        npc_role="guard",
+        emotion_label="neutral",
+        relation={},
+        top_memories=[],
+        quest_state={"parcel_done": False},
+    )
+    none_trust_action = choose_action(
+        npc_role="guard",
+        emotion_label="neutral",
+        relation={"trust": None},
+        top_memories=[],
+        quest_state={"parcel_done": False},
+    )
+    assert missing_trust_action == "refuse"
+    assert none_trust_action == "refuse"
+
+
 def test_choose_action_merchant_gives_clue_when_parcel_done():
     action = choose_action(
         npc_role="merchant",
