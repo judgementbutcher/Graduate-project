@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -33,6 +33,7 @@ class NPC(Base):
 
 class RelationshipState(Base):
     __tablename__ = "relationship_state"
+    __table_args__ = (UniqueConstraint("player_id", "npc_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     player_id: Mapped[int] = mapped_column(ForeignKey("player.id"), nullable=False)
@@ -70,6 +71,7 @@ class Quest(Base):
 
 class QuestProgress(Base):
     __tablename__ = "quest_progress"
+    __table_args__ = (UniqueConstraint("player_id", "quest_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     player_id: Mapped[int] = mapped_column(ForeignKey("player.id"), nullable=False)
@@ -89,5 +91,5 @@ class DialogueLog(Base):
     emotion_result: Mapped[str] = mapped_column(String(100), nullable=False)
     chosen_action: Mapped[str] = mapped_column(String(100), nullable=False)
     npc_reply: Mapped[str] = mapped_column(Text, nullable=False)
-    quest_update: Mapped[str] = mapped_column(Text, nullable=True)
+    quest_update: Mapped[str] = mapped_column(Text, nullable=False, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
