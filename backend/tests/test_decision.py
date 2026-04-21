@@ -8,6 +8,11 @@ def test_detect_emotion_flags_hostile_text():
     assert result["label"] == "hostile"
 
 
+def test_detect_emotion_flags_friendly_text():
+    result = detect_emotion("Please help me, friend.")
+    assert result["label"] == "friendly"
+
+
 def test_score_memory_gate_match_scores_above_two():
     memory = {
         "keywords": "gate,parcel,road",
@@ -103,4 +108,32 @@ def test_choose_action_no_matches_returns_neutral_reply():
         top_memories=[],
         quest_state={"parcel_done": False},
     )
+    assert action == "neutral_reply"
+
+
+def test_keyword_parsing_handles_punctuation_and_multiword_formatting():
+    memory = {
+        "keywords": "north-gate, parcel road",
+        "importance": 0.0,
+        "emotion_tag": "neutral",
+    }
+    score = score_memory("The north gate road is blocked.", "hostile", memory)
+    assert score == 3.0
+
+
+def test_irrelevant_memories_do_not_trigger_probe_and_return_neutral_reply():
+    memories = [
+        {"keywords": "market,apple", "importance": 0.0, "emotion_tag": "friendly"},
+        {"keywords": "river,boat", "importance": 0.0, "emotion_tag": "hostile"},
+    ]
+    relevant = top_memories("gate permit", "neutral", memories, limit=2)
+
+    action = choose_action(
+        npc_role="villager",
+        emotion_label="neutral",
+        relation={},
+        top_memories=relevant,
+        quest_state={"parcel_done": False},
+    )
+    assert relevant == []
     assert action == "neutral_reply"
