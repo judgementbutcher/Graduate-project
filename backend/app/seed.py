@@ -26,18 +26,39 @@ def seed_database(session: Session) -> None:
         session.execute(
             sqlite_insert(NPC)
             .values(**npc_data)
-            .on_conflict_do_nothing(index_elements=["id"])
+            .on_conflict_do_update(
+                index_elements=["id"],
+                set_={
+                    "name": npc_data["name"],
+                    "role": npc_data["role"],
+                    "personality": npc_data["personality"],
+                    "current_scene": npc_data["current_scene"],
+                    "emotion_state": npc_data["emotion_state"],
+                    "description": npc_data["description"],
+                },
+            )
         )
 
     for quest_data in _load_json("quests.json"):
         session.execute(
             sqlite_insert(Quest)
             .values(**quest_data)
-            .on_conflict_do_nothing(index_elements=["id"])
+            .on_conflict_do_update(
+                index_elements=["id"],
+                set_={
+                    "title": quest_data["title"],
+                    "description": quest_data["description"],
+                    "quest_type": quest_data["quest_type"],
+                    "giver_npc_id": quest_data["giver_npc_id"],
+                    "target_scene": quest_data["target_scene"],
+                    "reward_desc": quest_data["reward_desc"],
+                },
+            )
         )
 
     required_memories = [
         {
+            "id": 1,
             "npc_id": 1,
             "content": "I noticed footprints near the northern gate after sunset.",
             "keywords": "footprints,gate,north",
@@ -46,6 +67,7 @@ def seed_database(session: Session) -> None:
             "source_event": "gate_report",
         },
         {
+            "id": 2,
             "npc_id": 2,
             "content": "I do not open the gate without proof of safe passage.",
             "keywords": "gate,proof,passage",
@@ -54,6 +76,7 @@ def seed_database(session: Session) -> None:
             "source_event": "guard_protocol",
         },
         {
+            "id": 3,
             "npc_id": 3,
             "content": "I lost a parcel near the gate road this morning.",
             "keywords": "parcel,merchant,gate",
@@ -66,7 +89,15 @@ def seed_database(session: Session) -> None:
         session.execute(
             sqlite_insert(NPCMemory)
             .values(**memory_data)
-            .on_conflict_do_nothing(index_elements=["npc_id", "content"])
+            .on_conflict_do_update(
+                index_elements=["npc_id", "source_event"],
+                set_={
+                    "content": memory_data["content"],
+                    "keywords": memory_data["keywords"],
+                    "importance": memory_data["importance"],
+                    "emotion_tag": memory_data["emotion_tag"],
+                },
+            )
         )
 
     for npc_id in (1, 2, 3):

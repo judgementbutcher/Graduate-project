@@ -46,7 +46,7 @@ class RelationshipState(Base):
 
 class NPCMemory(Base):
     __tablename__ = "npc_memory"
-    __table_args__ = (UniqueConstraint("npc_id", "content"),)
+    __table_args__ = (UniqueConstraint("npc_id", "source_event"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     npc_id: Mapped[int] = mapped_column(ForeignKey("npc.id"), nullable=False)

@@ -78,3 +78,43 @@ def test_foreign_keys_are_enforced(test_session):
     with pytest.raises(IntegrityError):
         test_session.commit()
     test_session.rollback()
+
+
+def test_seed_repairs_static_seed_drift(test_session):
+    seed_database(test_session)
+    test_session.commit()
+
+    npc = test_session.scalar(select(NPC).where(NPC.id == 1))
+    quest = test_session.scalar(select(Quest).where(Quest.id == 1))
+    memory = test_session.scalar(
+        select(NPCMemory).where(
+            NPCMemory.npc_id == 1,
+            NPCMemory.source_event == "gate_report",
+        )
+    )
+    assert npc is not None
+    assert quest is not None
+    assert memory is not None
+
+    npc.name = "Drifted Chief"
+    quest.title = "Drifted Quest"
+    memory.content = "Drifted memory content."
+    test_session.commit()
+
+    seed_database(test_session)
+    test_session.commit()
+
+    repaired_npc = test_session.scalar(select(NPC).where(NPC.id == 1))
+    repaired_quest = test_session.scalar(select(Quest).where(Quest.id == 1))
+    repaired_memory = test_session.scalar(
+        select(NPCMemory).where(
+            NPCMemory.npc_id == 1,
+            NPCMemory.source_event == "gate_report",
+        )
+    )
+    assert repaired_npc is not None
+    assert repaired_quest is not None
+    assert repaired_memory is not None
+    assert repaired_npc.name == "Village Chief"
+    assert repaired_quest.title == "Strange Footprints"
+    assert repaired_memory.content == "I noticed footprints near the northern gate after sunset."
