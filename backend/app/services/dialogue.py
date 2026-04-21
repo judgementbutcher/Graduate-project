@@ -29,6 +29,10 @@ def run_dialogue(session: Session, payload: DialogueRequest) -> dict:
             RelationshipState.npc_id == payload.npc_id,
         )
     )
+    if relationship is None:
+        raise ValueError(
+            f"Relationship state missing for player {payload.player_id} and npc {payload.npc_id}"
+        )
 
     memory_rows = session.scalars(select(NPCMemory).where(NPCMemory.npc_id == payload.npc_id)).all()
     memories = [
@@ -75,7 +79,11 @@ def run_dialogue(session: Session, payload: DialogueRequest) -> dict:
     quest_update = "none"
     if payload.npc_id == 1 and chosen_action == "give_hint":
         quest_one = quest_by_id.get(1)
-        if quest_one is not None:
+        if (
+            quest_one is not None
+            and quest_one.status == "locked"
+            and quest_one.current_stage == 0
+        ):
             quest_one.status = "active"
             quest_one.current_stage = 1
             quest_update = "main_started"
