@@ -137,3 +137,27 @@ def test_irrelevant_memories_do_not_trigger_probe_and_return_neutral_reply():
     )
     assert relevant == []
     assert action == "neutral_reply"
+
+
+def test_top_memories_filters_unrelated_importance_only_memory():
+    memories = [
+        {"keywords": "market", "importance": 3.0, "emotion_tag": "neutral"},
+    ]
+    relevant = top_memories("gate permit", "neutral", memories, limit=2)
+    assert relevant == []
+
+
+def test_top_memories_filters_unrelated_emotion_only_memory_and_keeps_neutral_reply():
+    memories = [
+        {"keywords": "market", "importance": 0.0, "emotion_tag": "neutral"},
+    ]
+    relevant = top_memories("gate permit", "neutral", memories, limit=2)
+    action = choose_action(
+        npc_role="villager",
+        emotion_label="neutral",
+        relation={},
+        top_memories=relevant,
+        quest_state={"parcel_done": False},
+    )
+    assert relevant == []
+    assert action == "neutral_reply"
