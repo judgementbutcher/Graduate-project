@@ -1,6 +1,6 @@
 from collections.abc import Generator
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal
@@ -22,8 +22,5 @@ def get_session() -> Generator[Session, None, None]:
 def interact(
     payload: DialogueRequest, session: Session = Depends(get_session)
 ) -> DialogueResponse:
-    try:
-        result = run_dialogue(session, payload)
-        return DialogueResponse(**result)
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    result = run_dialogue(session, payload)
+    return DialogueResponse(**result)

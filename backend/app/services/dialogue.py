@@ -29,10 +29,6 @@ def run_dialogue(session: Session, payload: DialogueRequest) -> dict:
             RelationshipState.npc_id == payload.npc_id,
         )
     )
-    if relationship is None:
-        relationship = RelationshipState(player_id=payload.player_id, npc_id=payload.npc_id)
-        session.add(relationship)
-        session.flush()
 
     memory_rows = session.scalars(select(NPCMemory).where(NPCMemory.npc_id == payload.npc_id)).all()
     memories = [
@@ -79,13 +75,10 @@ def run_dialogue(session: Session, payload: DialogueRequest) -> dict:
     quest_update = "none"
     if payload.npc_id == 1 and chosen_action == "give_hint":
         quest_one = quest_by_id.get(1)
-        if quest_one is None:
-            quest_one = QuestProgress(player_id=payload.player_id, quest_id=1)
-            session.add(quest_one)
-            session.flush()
-        quest_one.status = "active"
-        quest_one.current_stage = 1
-        quest_update = "main_started"
+        if quest_one is not None:
+            quest_one.status = "active"
+            quest_one.current_stage = 1
+            quest_update = "main_started"
 
     npc_reply = REPLY_TEMPLATES.get(chosen_action, REPLY_TEMPLATES["neutral_reply"])
 
