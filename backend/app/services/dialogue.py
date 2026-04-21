@@ -15,6 +15,7 @@ REPLY_TEMPLATES = {
     "warn": "The NPC stiffens. 'Watch your tone if you want help.'",
     "give_clue": "Merchant Lin nods. 'You earned this clue. I saw tracks near the old gate.'",
     "neutral_reply": "The NPC offers a short, cautious reply.",
+    "fallback": "The NPC hesitates, saying nothing useful for the moment.",
 }
 
 
@@ -77,7 +78,7 @@ def run_dialogue(session: Session, payload: DialogueRequest) -> dict:
     relationship.alertness += delta["alertness"]
 
     quest_update = "none"
-    if payload.npc_id == 1 and chosen_action == "give_hint":
+    if npc.role == "chief" and chosen_action == "give_hint":
         quest_one = quest_by_id.get(1)
         if (
             quest_one is not None
@@ -88,7 +89,7 @@ def run_dialogue(session: Session, payload: DialogueRequest) -> dict:
             quest_one.current_stage = 1
             quest_update = "main_started"
 
-    npc_reply = REPLY_TEMPLATES.get(chosen_action, REPLY_TEMPLATES["neutral_reply"])
+    npc_reply = REPLY_TEMPLATES.get(chosen_action, REPLY_TEMPLATES["fallback"])
 
     session.add(
         DialogueLog(

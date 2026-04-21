@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/dialogue_manager.gd" id="1_dialogue"]
+
+[node name="DialoguePanel" type="Control"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dialogue")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -240.0
+offset_right = -80.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+
+[node name="ReplyLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+bbcode_enabled = false
+text = "Talking to NPC"
+
+[node name="OptionHelp" type="Button" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+text = "Ask For Help"
+
+[node name="OptionPolite" type="Button" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+text = "Be Polite"
+
+[node name="OptionDemand" type="Button" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+text = "Demand Answer"

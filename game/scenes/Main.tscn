@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/ui/DialoguePanel.tscn" id="2_dialogue"]
+[ext_resource type="PackedScene" path="res://scenes/ui/QuestPanel.tscn" id="3_quest"]
+[ext_resource type="PackedScene" path="res://scenes/ui/SavePanel.tscn" id="4_save"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_main")
+
+[node name="WorldRoot" type="Node" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialoguePanel" parent="CanvasLayer" instance=ExtResource("2_dialogue")]
+
+[node name="QuestPanel" parent="CanvasLayer" instance=ExtResource("3_quest")]
+
+[node name="SavePanel" parent="CanvasLayer" instance=ExtResource("4_save")]
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
