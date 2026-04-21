@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "Strange Footprints",
+    "description": "Investigate mysterious footprints reported near the village gate.",
+    "quest_type": "main",
+    "giver_npc_id": 1,
+    "target_scene": "gate",
+    "reward_desc": "Progress main story"
+  },
+  {
+    "id": 2,
+    "title": "Merchant's Lost Parcel",
+    "description": "Help Merchant Lin recover the missing parcel on the gate road.",
+    "quest_type": "side",
+    "giver_npc_id": 3,
+    "target_scene": "gate",
+    "reward_desc": "Gain trust and clue"
+  },
+  {
+    "id": 3,
+    "title": "Permission to Pass",
+    "description": "Convince the guard to allow passage through the gate.",
+    "quest_type": "side",
+    "giver_npc_id": 2,
+    "target_scene": "village",
+    "reward_desc": "Unlock access"
+  }
+]

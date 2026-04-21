@@ -1,0 +1,93 @@
+from datetime import datetime
+
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Player(Base):
+    __tablename__ = "players"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    current_scene: Mapped[str] = mapped_column(String(100), nullable=False, default="village")
+    position_x: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    position_y: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+
+class NPC(Base):
+    __tablename__ = "npcs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    role: Mapped[str] = mapped_column(String(100), nullable=False)
+    personality: Mapped[str] = mapped_column(Text, nullable=False)
+    current_scene: Mapped[str] = mapped_column(String(100), nullable=False)
+    emotion_state: Mapped[str] = mapped_column(String(50), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class RelationshipState(Base):
+    __tablename__ = "relationship_states"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
+    npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    favorability: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    trust: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    alertness: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+
+class NPCMemory(Base):
+    __tablename__ = "npc_memories"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    keywords: Mapped[str] = mapped_column(String(255), nullable=False)
+    importance: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    emotion_tag: Mapped[str] = mapped_column(String(50), nullable=False)
+    source_event: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+
+class Quest(Base):
+    __tablename__ = "quests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    quest_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    giver_npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    target_scene: Mapped[str] = mapped_column(String(100), nullable=False)
+    reward_desc: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class QuestProgress(Base):
+    __tablename__ = "quest_progress"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
+    quest_id: Mapped[int] = mapped_column(ForeignKey("quests.id"), nullable=False)
+    current_stage: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="not_started")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+
+class DialogueLog(Base):
+    __tablename__ = "dialogue_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
+    npc_id: Mapped[int] = mapped_column(ForeignKey("npcs.id"), nullable=False)
+    player_input: Mapped[str] = mapped_column(Text, nullable=False)
+    emotion_result: Mapped[str] = mapped_column(String(100), nullable=False)
+    chosen_action: Mapped[str] = mapped_column(String(100), nullable=False)
+    npc_reply: Mapped[str] = mapped_column(Text, nullable=False)
+    quest_update: Mapped[str] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
