@@ -1,4 +1,6 @@
+import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 from app.models import NPC, NPCMemory, Player, Quest, QuestProgress, RelationshipState
 from app.seed import seed_database
@@ -57,3 +59,12 @@ def test_seed_is_idempotent_for_seeded_tables(test_session):
     assert memory_count == 3
     assert relationship_count == 3
     assert progress_count == 3
+
+
+def test_foreign_keys_are_enforced(test_session):
+    seed_database(test_session)
+
+    test_session.add(RelationshipState(player_id=999, npc_id=1))
+    with pytest.raises(IntegrityError):
+        test_session.commit()
+    test_session.rollback()

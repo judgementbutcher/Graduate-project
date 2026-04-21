@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 from app.models import NPC, NPCMemory, Player, Quest, QuestProgress, RelationshipState
@@ -16,16 +16,25 @@ def _load_json(filename: str) -> list[dict]:
 
 
 def seed_database(session: Session) -> None:
-    if session.get(Player, 1) is None:
-        session.add(Player(id=1, name="Hero"))
+    session.execute(
+        sqlite_insert(Player)
+        .values(id=1, name="Hero")
+        .on_conflict_do_nothing(index_elements=["id"])
+    )
 
     for npc_data in _load_json("npcs.json"):
-        if session.get(NPC, npc_data["id"]) is None:
-            session.add(NPC(**npc_data))
+        session.execute(
+            sqlite_insert(NPC)
+            .values(**npc_data)
+            .on_conflict_do_nothing(index_elements=["id"])
+        )
 
     for quest_data in _load_json("quests.json"):
-        if session.get(Quest, quest_data["id"]) is None:
-            session.add(Quest(**quest_data))
+        session.execute(
+            sqlite_insert(Quest)
+            .values(**quest_data)
+            .on_conflict_do_nothing(index_elements=["id"])
+        )
 
     required_memories = [
         {
@@ -54,33 +63,24 @@ def seed_database(session: Session) -> None:
         },
     ]
     for memory_data in required_memories:
-        existing_memory = session.scalar(
-            select(NPCMemory).where(
-                NPCMemory.npc_id == memory_data["npc_id"],
-                NPCMemory.content == memory_data["content"],
-            )
+        session.execute(
+            sqlite_insert(NPCMemory)
+            .values(**memory_data)
+            .on_conflict_do_nothing(index_elements=["npc_id", "content"])
         )
-        if existing_memory is None:
-            session.add(NPCMemory(**memory_data))
 
     for npc_id in (1, 2, 3):
-        relationship = session.scalar(
-            select(RelationshipState).where(
-                RelationshipState.player_id == 1,
-                RelationshipState.npc_id == npc_id,
-            )
+        session.execute(
+            sqlite_insert(RelationshipState)
+            .values(player_id=1, npc_id=npc_id)
+            .on_conflict_do_nothing(index_elements=["player_id", "npc_id"])
         )
-        if relationship is None:
-            session.add(RelationshipState(player_id=1, npc_id=npc_id))
 
     for quest_id in (1, 2, 3):
-        progress = session.scalar(
-            select(QuestProgress).where(
-                QuestProgress.player_id == 1,
-                QuestProgress.quest_id == quest_id,
-            )
+        session.execute(
+            sqlite_insert(QuestProgress)
+            .values(player_id=1, quest_id=quest_id)
+            .on_conflict_do_nothing(index_elements=["player_id", "quest_id"])
         )
-        if progress is None:
-            session.add(QuestProgress(player_id=1, quest_id=quest_id))
 
     session.commit()
