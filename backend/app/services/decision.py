@@ -8,7 +8,8 @@ def choose_action(
     top_memories: list[dict],
     quest_state: dict,
 ) -> str:
-    if npc_role == "guard" and relation["trust"] < 1 and not quest_state.get(
+    trust = relation.get("trust", 0)
+    if npc_role == "guard" and trust < 1 and not quest_state.get(
         "parcel_done", False
     ):
         return "refuse"

@@ -60,3 +60,47 @@ def test_choose_action_precedence_merchant_clue_over_hostile_and_probe():
         quest_state={"parcel_done": True},
     )
     assert action == "give_clue"
+
+
+def test_choose_action_chief_friendly_gives_hint():
+    action = choose_action(
+        npc_role="chief",
+        emotion_label="friendly",
+        relation={},
+        top_memories=[],
+        quest_state={"parcel_done": False},
+    )
+    assert action == "give_hint"
+
+
+def test_choose_action_hostile_warns_without_earlier_matches():
+    action = choose_action(
+        npc_role="villager",
+        emotion_label="hostile",
+        relation={},
+        top_memories=[],
+        quest_state={"parcel_done": False},
+    )
+    assert action == "warn"
+
+
+def test_choose_action_memories_probe_without_earlier_matches():
+    action = choose_action(
+        npc_role="villager",
+        emotion_label="neutral",
+        relation={},
+        top_memories=[{"id": "m1"}],
+        quest_state={"parcel_done": False},
+    )
+    assert action == "probe"
+
+
+def test_choose_action_no_matches_returns_neutral_reply():
+    action = choose_action(
+        npc_role="villager",
+        emotion_label="neutral",
+        relation={},
+        top_memories=[],
+        quest_state={"parcel_done": False},
+    )
+    assert action == "neutral_reply"
