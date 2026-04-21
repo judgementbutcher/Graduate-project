@@ -82,5 +82,3 @@ def seed_database(session: Session) -> None:
             .values(player_id=1, quest_id=quest_id)
             .on_conflict_do_nothing(index_elements=["player_id", "quest_id"])
         )
-
-    session.commit()

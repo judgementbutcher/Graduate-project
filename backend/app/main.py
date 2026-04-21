@@ -12,6 +12,7 @@ def on_startup() -> None:
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as session:
         seed_database(session)
+        session.commit()
 
 
 @app.get("/health")

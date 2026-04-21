@@ -11,7 +11,7 @@ def test_seed_creates_expected_core_rows(test_session):
 
     hero = test_session.scalar(select(Player).where(Player.id == 1))
     npcs = test_session.scalars(select(NPC).order_by(NPC.id)).all()
-    quests = test_session.scalars(select(Quest)).all()
+    quests = test_session.scalars(select(Quest).order_by(Quest.id)).all()
     relationships = test_session.scalars(
         select(RelationshipState).where(RelationshipState.player_id == 1)
     ).all()
@@ -31,13 +31,23 @@ def test_seed_creates_expected_core_rows(test_session):
         "Gate Guard",
         "Merchant Lin",
     ]
+    assert [quest.title for quest in quests] == [
+        "Strange Footprints",
+        "Merchant's Lost Parcel",
+        "Permission to Pass",
+    ]
 
 
 def test_seed_creates_npc_memory_rows_for_decision_logic(test_session):
     seed_database(test_session)
 
-    memories = test_session.scalars(select(NPCMemory)).all()
-    assert len(memories) >= 3
+    memories = test_session.scalars(select(NPCMemory).order_by(NPCMemory.npc_id)).all()
+    assert len(memories) == 3
+    assert [memory.content for memory in memories] == [
+        "I noticed footprints near the northern gate after sunset.",
+        "I do not open the gate without proof of safe passage.",
+        "I lost a parcel near the gate road this morning.",
+    ]
 
 
 def test_seed_is_idempotent_for_seeded_tables(test_session):
